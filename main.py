@@ -1,5 +1,6 @@
 # Importing libraries
 import streamlit as st
+import matplotlib.pyplot as plt
 import os
 import requests
 from bs4 import BeautifulSoup
@@ -50,6 +51,9 @@ def scrape_images(keyword, directory, num_images):
                 count += 1
                 if count >= num_images:
                     break
+
+
+
 # Streamlit app
 st.title("Image Classification")
 
@@ -122,6 +126,7 @@ if st.button('Perform Small EDA'):
     for category in categories:
         show_images(category)
 
+# Training your model
 st.write("Train your model")
 epochs = st.sidebar.slider("Select the number of epochs", min_value=1, max_value=50, value=20, step=1)
 if st.button('Train Model'):
@@ -199,3 +204,14 @@ if st.button('Train Model'):
     history = model.fit(training_set,
                         validation_data=validation_set,
                         epochs=epochs)
+    st.write("Training completed!")  
+
+    # Plot Training and Validation Error
+    plt.figure(figsize=(8, 6))
+    plt.plot(history.history['loss'], label='Training Error')
+    plt.plot(history.history['val_loss'], label='Validation Error')
+    plt.title('Training and Validation Error')
+    plt.xlabel('Epochs')
+    plt.ylabel('Error')
+    plt.legend()
+    st.pyplot(plt)  
