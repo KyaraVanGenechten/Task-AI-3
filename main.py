@@ -206,6 +206,7 @@ if st.button('Train Model'):
                         epochs=epochs)
     st.write("Training completed!")  
 
+    st.write("Training and Validation graphic")
     # Plot Training and Validation Error
     plt.figure(figsize=(8, 6))
     plt.plot(history.history['loss'], label='Training Error')
