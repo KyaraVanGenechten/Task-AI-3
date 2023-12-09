@@ -222,6 +222,9 @@ if st.button('Train Model'):
 
     st.write("Confusion matrix")
     # confusion matrix
+    predictions = model.predict(test_set)
+    predicted_classes = np.argmax(predictions, axis=1)
+
     confusion_mtx = confusion_matrix(test_set.labels, predicted_classes)
 
     # define categories
