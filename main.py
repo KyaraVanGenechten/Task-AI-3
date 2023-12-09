@@ -11,7 +11,7 @@ from keras.layers import MaxPooling2D
 from keras.layers import Flatten
 from keras.layers import Dense
 from keras.layers import Dropout
-    from keras.preprocessing.image import ImageDataGenerator
+from keras.preprocessing.image import ImageDataGenerator
 
 # Functions to scrape the images -> same as in notebook
 # Function to create a folder if it doesn't exist
@@ -28,7 +28,7 @@ def save_image(url, directory, count):
                 if chunk:
                     file.write(chunk)
     except Exception as e:
-        print(f"Failed to save image {url}: {str(e)}")
+        st.write(f"Failed to save image {url}: {str(e)}")
 
 # Function to scrape images
 def scrape_images(keyword, directory, num_images):
@@ -193,7 +193,7 @@ if st.button('Train Model'):
     model.compile(optimizer = 'adam', loss = 'sparse_categorical_crossentropy', metrics = ['accuracy'])
 
     # Print out the summary of our model
-    print(model.summary())
+    st.write(model.summary())
 
     # Train your model using the 'epochs' variable
     history = model.fit(training_set,
