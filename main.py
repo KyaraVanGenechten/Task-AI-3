@@ -62,6 +62,7 @@ st.title("Image Classification")
 # More information about the task and my categories
 st.write("This Streamlit app is about image classification")
 st.write("The subject of the photos I chose is sports. I chose 5 different categories, such as swimming, cycling, dancing, yoga and running.")
+st.subheader("Image Scraping")
 
 # Button to start scraping images
 if st.button('Start Image Scraping'):
@@ -86,6 +87,7 @@ if st.button('Start Image Scraping'):
     progress_text.text("Image scraping completed!")
 
 # Performing a small EDA
+st.subheader("Perform a Small EDA")
 if st.button('Perform Small EDA'):
     if not image_scraped:  # Check if images have been scraped
         st.warning("Please click on 'Start Image Scraping' first!")
