@@ -63,6 +63,8 @@ st.write("The subject of the photos I chose is sports. I chose 5 different categ
 
 # Button to start scraping images
 if st.button('Start Image Scraping'):
+    image_scraped = True 
+
     categories = ['dancing', 'yoga', 'swimming', 'running', 'cycling']
     num_images_per_category = 5000
     
@@ -83,136 +85,140 @@ if st.button('Start Image Scraping'):
 
 # Performing a small EDA
 if st.button('Perform Small EDA'):
+    if not image_scraped:  # Check if images have been scraped
+        st.warning("Please click on 'Start Image Scraping' first!")
+    else:
+        # folder where images are stored
+        folder = 'images'
 
-    # folder where images are stored
-    folder = 'images'
+        # List all subfolders
+        categories = os.listdir(folder)
 
-    # List all subfolders
-    categories = os.listdir(folder)
+        st.write("Number of images in each category:")
+        # Display number of images in each category
+        for category in categories:
+            path = os.path.join(folder, category)
+            if os.path.isdir(path):
+                num_images = len(os.listdir(path))
+                st.write(f"{category}: {num_images} images")
 
-    st.write("Number of images in each category:")
-    # Display number of images in each category
-    for category in categories:
-        path = os.path.join(folder, category)
-        if os.path.isdir(path):
-            num_images = len(os.listdir(path))
-            st.write(f"{category}: {num_images} images")
+            # 2.2 Performing a small EDA
+            # Function called display_images to display 2 images from each category
+            # This function has 2 parameters: category, number
+            def show_images(category_name, number=2):
+                st.subheader(f"Images for {category_name}")
+                # path of the folders
+                path = os.path.join(folder, category_name)
+                image_files = os.listdir(path)
+                
+                # Check if there are at least 2 images available in the category
+                num_images_available = len(image_files)
+                if num_images_available < 2:
+                    st.write("You need to click on the button to start image scrappping and then you can perform a small EDA")
+                    return
 
-    # 2.2 Performing a small EDA
-    # Function called display_images to display 2 images from each category
-    # This function has 2 parameters: category, number
-    def show_images(category_name, number=2):
-        st.subheader(f"Images for {category_name}")
-        # path of the folders
-        path = os.path.join(folder, category_name)
-        image_files = os.listdir(path)
-        
-        # Check if there are at least 2 images available in the category
-        num_images_available = len(image_files)
-        if num_images_available < 2:
-            st.write("You need to click on the button to start image scrappping and then you can perform a small EDA")
-            return
+                # For 2 images
+                for i in range(number):
+                    # Path of the image
+                    img_path = os.path.join(path, image_files[i])
+                    # Show the image with no axis and set the pictures next to each other
+                    img = Image.open(img_path)
+                    st.image(img, caption=f"Photo {i+1}")
 
-        # For 2 images
-        for i in range(number):
-            # Path of the image
-            img_path = os.path.join(path, image_files[i])
-            # Show the image with no axis and set the pictures next to each other
-            img = Image.open(img_path)
-            st.image(img, caption=f"Photo {i+1}")
-
-
-    # Display 2 images from each class and call the function show_images
-    for category in categories:
-        show_images(category)
+        # Display 2 images from each class and call the function show_images
+        for category in categories:
+            show_images(category)
 
 # Training your model
 st.subheader("Train your model")
-epochs = st.sidebar.slider("Select the number of epochs", min_value=1, max_value=50, value=20, step=1)
+epochs = st.slider("Select the number of epochs", min_value=1, max_value=50, value=20, step=1)
 if st.button('Train Model'):
-    # Define a slider for selecting the number of epochs
-    epochs = st.sidebar.slider("Select the number of epochs", min_value=1, max_value=50, value=20, step=1)
+    if not image_scraped:  # Check if images have been scraped
+        st.warning("Please click on 'Start Image Scraping' first!")
+    else:   
+        # Define a slider for selecting the number of epochs
+        epochs = st.sidebar.slider("Select the number of epochs", min_value=1, max_value=50, value=20, step=1)
 
-    # Display the selected epochs
-    st.write(f"Training will run for {epochs} epochs")
+        # Display the selected epochs
+        st.write(f"Training will run for {epochs} epochs")
 
-    # 2 Designing a CNN network
+        # 2 Designing a CNN network
 
-    train_val_datagen = ImageDataGenerator(validation_split=0.2,
-                                    rescale = 1./255,
-                                    shear_range = 0.2,
-                                    zoom_range = 0.2,
-                                    horizontal_flip = True)
+        train_val_datagen = ImageDataGenerator(validation_split=0.2,
+                                        rescale = 1./255,
+                                        shear_range = 0.2,
+                                        zoom_range = 0.2,
+                                        horizontal_flip = True)
 
-    test_datagen = ImageDataGenerator(rescale = 1./255)
+        test_datagen = ImageDataGenerator(rescale = 1./255)
 
-    # 3 sets: training, validation and test set
-    # give folder 'images/' , the subset is what is does for example training, the images will be shaped to 64 x 64 pixel. batch_size means that after 32 photos the loss will be calculated for that batch
-    # the class_mode is categorical because we have a few categories. 
-    training_set = train_val_datagen.flow_from_directory('images/',
-                                                    subset='training',
-                                                    target_size = (64, 64),
-                                                    batch_size = 32,
-                                                    class_mode = 'sparse') 
+        # 3 sets: training, validation and test set
+        # give folder 'images/' , the subset is what is does for example training, the images will be shaped to 64 x 64 pixel. batch_size means that after 32 photos the loss will be calculated for that batch
+        # the class_mode is categorical because we have a few categories. 
+        training_set = train_val_datagen.flow_from_directory('images/',
+                                                        subset='training',
+                                                        target_size = (64, 64),
+                                                        batch_size = 32,
+                                                        class_mode = 'sparse') 
 
-    validation_set = train_val_datagen.flow_from_directory('images/',
-                                                    subset='validation',
+        validation_set = train_val_datagen.flow_from_directory('images/',
+                                                        subset='validation',
+                                                        target_size = (64, 64),
+                                                        batch_size = 32,
+                                                        class_mode = 'sparse')
+
+        test_set = test_datagen.flow_from_directory('images/',
                                                     target_size = (64, 64),
                                                     batch_size = 32,
                                                     class_mode = 'sparse')
 
-    test_set = test_datagen.flow_from_directory('images/',
-                                                target_size = (64, 64),
-                                                batch_size = 32,
-                                                class_mode = 'sparse')
 
+        # 3 Design a CNN network
+        # initialising the CNN
+        model = Sequential()
 
-    # 3 Design a CNN network
-    # initialising the CNN
-    model = Sequential()
+        # 32-> number of filters, 3,3-> size of filter
+        # input shape 64x64 pixels, 3-> red, green, blue, activiation is relu
+        model.add(Conv2D(32, (3, 3), input_shape = (64, 64, 3), activation = 'relu'))
 
-    # 32-> number of filters, 3,3-> size of filter
-    # input shape 64x64 pixels, 3-> red, green, blue, activiation is relu
-    model.add(Conv2D(32, (3, 3), input_shape = (64, 64, 3), activation = 'relu'))
+        # Max pooling with a size of 2x2
+        model.add(MaxPooling2D(pool_size = (2, 2)))
 
-    # Max pooling with a size of 2x2
-    model.add(MaxPooling2D(pool_size = (2, 2)))
+        # Add a drop out -> helps prevent of overfitting
+        model.add(Dropout(0.2))
 
-    # Add a drop out -> helps prevent of overfitting
-    model.add(Dropout(0.2))
+        # Repeat of Conv2D and MaxPooling2D
+        model.add(Conv2D(64, (3, 3), activation = 'relu'))
+        model.add(MaxPooling2D(pool_size = (2, 2)))
+        model.add(Dropout(0.2))
 
-    # Repeat of Conv2D and MaxPooling2D
-    model.add(Conv2D(64, (3, 3), activation = 'relu'))
-    model.add(MaxPooling2D(pool_size = (2, 2)))
-    model.add(Dropout(0.2))
+        # Flatten -> into 1 dimensional array
+        model.add(Flatten())
+        # Dense -> hidden layer, fully connected
+        model.add(Dense(activation='relu', units=128))
 
-    # Flatten -> into 1 dimensional array
-    model.add(Flatten())
-    # Dense -> hidden layer, fully connected
-    model.add(Dense(activation='relu', units=128))
+        # We have 5 different units: dancing, running, cycling, yoga or swimming and we are going to use softmax
+        model.add(Dense(activation="softmax", units=5))
 
-    # We have 5 different units: dancing, running, cycling, yoga or swimming and we are going to use softmax
-    model.add(Dense(activation="softmax", units=5))
+        # compiling the CNN with the optimizer of adam and the loss with categorical
+        model.compile(optimizer = 'adam', loss = 'sparse_categorical_crossentropy', metrics = ['accuracy'])
 
-    # compiling the CNN with the optimizer of adam and the loss with categorical
-    model.compile(optimizer = 'adam', loss = 'sparse_categorical_crossentropy', metrics = ['accuracy'])
+        # Print out the summary of our model
+        st.write(model.summary())
 
-    # Print out the summary of our model
-    st.write(model.summary())
+        # Train your model using the 'epochs' variable
+        history = model.fit(training_set,
+                            validation_data=validation_set,
+                            epochs=epochs)
+        st.write("Training completed!")  
 
-    # Train your model using the 'epochs' variable
-    history = model.fit(training_set,
-                        validation_data=validation_set,
-                        epochs=epochs)
-    st.write("Training completed!")  
-
-    st.write("Training and Validation graphic")
-    # Plot Training and Validation Error
-    plt.figure(figsize=(8, 6))
-    plt.plot(history.history['loss'], label='Training Error')
-    plt.plot(history.history['val_loss'], label='Validation Error')
-    plt.title('Training and Validation Error')
-    plt.xlabel('Epochs')
-    plt.ylabel('Error')
-    plt.legend()
-    st.pyplot(plt)  
+        st.write("Training and Validation graphic")
+        # Plot Training and Validation Error
+        plt.figure(figsize=(8, 6))
+        plt.plot(history.history['loss'], label='Training Error')
+        plt.plot(history.history['val_loss'], label='Validation Error')
+        plt.title('Training and Validation Error')
+        plt.xlabel('Epochs')
+        plt.ylabel('Error')
+        plt.legend()
+        st.pyplot(plt)  
