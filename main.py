@@ -4,7 +4,6 @@ import os
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
-st.title("Image Classification")
 
 # Functions to scrape the images -> same as in notebook
 # Function to create a folder if it doesn't exist
@@ -45,7 +44,7 @@ def scrape_images(keyword, directory, num_images):
 
                     break
 # Streamlit app
-st.title('Image Scraper App')
+st.title("Image Classification")
 
 # Button to start scraping images
 if st.button('Start Image Scraping'):
@@ -53,14 +52,16 @@ if st.button('Start Image Scraping'):
     num_images_per_category = 5000
     
     # Add a progress bar
+    progress_text = st.empty()
     progress_bar = st.progress(0)
-    current_progress = 0
     
     for i, category in enumerate(categories, start=1):
+        progress_text.text(f"Scraping images for {category}...")
+        
         scrape_images(category, f"images/{category}", num_images_per_category)
         
         # Update progress bar
-        current_progress = i / len(categories)
-        progress_bar.progress(current_progress)
+        progress_percent = i / len(categories)
+        progress_bar.progress(progress_percent)
     
-    st.write('Image scraping process completed!')
+    progress_text.text("Image scraping process completed!")
