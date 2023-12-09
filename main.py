@@ -131,7 +131,7 @@ if st.button('Perform Small EDA'):
 
 # Training your model
 st.subheader("Train your model")
-epochs = st.slider("Select the number of epochs", min_value=1, max_value=50, value=20, step=1)
+epochs_slider = st.slider("Select the number of epochs", key="epochs_slider", min_value=1, max_value=50, value=20, step=1)
 if st.button('Train Model'):
     # Define a slider for selecting the number of epochs
     epochs = st.sidebar.slider("Select the number of epochs", min_value=1, max_value=50, value=20, step=1)
