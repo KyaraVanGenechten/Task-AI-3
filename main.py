@@ -127,7 +127,7 @@ if st.button('Perform Small EDA'):
         show_images(category)
 
 # Training your model
-st.write("Train your model")
+st.subheader("Train your model")
 epochs = st.sidebar.slider("Select the number of epochs", min_value=1, max_value=50, value=20, step=1)
 if st.button('Train Model'):
     # Define a slider for selecting the number of epochs
