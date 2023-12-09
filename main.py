@@ -13,6 +13,8 @@ from keras.layers import Flatten
 from keras.layers import Dense
 from keras.layers import Dropout
 from keras.preprocessing.image import ImageDataGenerator
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
 
 image_scraped = False 
 
@@ -53,7 +55,6 @@ def scrape_images(keyword, directory, num_images):
                 count += 1
                 if count >= num_images:
                     break
-
 
 
 # Streamlit app
@@ -226,3 +227,19 @@ if st.button('Train Model'):
         plt.ylabel('Error')
         plt.legend()
         st.pyplot(plt)  
+
+        st.write("Confusion matrix")
+        # confusion matrix
+        confusion_mtx = confusion_matrix(test_set.labels, predicted_classes)
+
+        # define categories
+        categories = ['swimming', 'dancing', 'yoga', 'running', 'cycling']
+
+        # Plot de verwarringsmatrix als een heatmap
+        # fmt -> d -> integers no doubles
+        plt.figure(figsize=(8, 6))
+        sns.heatmap(confusion_mtx, annot=True, fmt='d', 
+                    xticklabels=categories, yticklabels=categories)
+        plt.xlabel('Predicted labels')
+        plt.ylabel('Actual labels')
+        plt.show()
