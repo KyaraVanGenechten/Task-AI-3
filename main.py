@@ -92,7 +92,7 @@ if st.button('Perform Small EDA'):
     folder = 'images'
 
     # List all subfolders
-     categories = os.listdir(folder)
+    categories = os.listdir(folder)
 
     st.write("Number of images in each category:")
     # Display number of images in each category
