@@ -14,6 +14,8 @@ from keras.layers import Dense
 from keras.layers import Dropout
 from keras.preprocessing.image import ImageDataGenerator
 
+image_scraped = False 
+
 # Functions to scrape the images -> same as in notebook
 # Function to create a folder if it doesn't exist
 def create_folder(directory):
