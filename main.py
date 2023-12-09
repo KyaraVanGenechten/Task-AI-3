@@ -5,6 +5,13 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
 from PIL import Image
+from keras.models import Sequential
+from keras.layers import Conv2D
+from keras.layers import MaxPooling2D
+from keras.layers import Flatten
+from keras.layers import Dense
+from keras.layers import Dropout
+    from keras.preprocessing.image import ImageDataGenerator
 
 # Functions to scrape the images -> same as in notebook
 # Function to create a folder if it doesn't exist
@@ -108,9 +115,87 @@ if st.button('Perform Small EDA'):
             img_path = os.path.join(path, image_files[i])
             # Show the image with no axis and set the pictures next to each other
             img = Image.open(img_path)
-            st.image(img, caption=f"Image {i+1}", use_column_width=True)
+            st.image(img, caption=f"Photo {i+1}")
 
 
     # Display 2 images from each class and call the function show_images
     for category in categories:
         show_images(category)
+
+st.write("Train your model")
+epochs = st.sidebar.slider("Select the number of epochs", min_value=1, max_value=50, value=20, step=1)
+if st.button('Train Model'):
+    # Define a slider for selecting the number of epochs
+    epochs = st.sidebar.slider("Select the number of epochs", min_value=1, max_value=50, value=20, step=1)
+
+    # Display the selected epochs
+    st.write(f"Training will run for {epochs} epochs")
+
+    # 2 Designing a CNN network
+
+    train_val_datagen = ImageDataGenerator(validation_split=0.2,
+                                    rescale = 1./255,
+                                    shear_range = 0.2,
+                                    zoom_range = 0.2,
+                                    horizontal_flip = True)
+
+    test_datagen = ImageDataGenerator(rescale = 1./255)
+
+    # 3 sets: training, validation and test set
+    # give folder 'images/' , the subset is what is does for example training, the images will be shaped to 64 x 64 pixel. batch_size means that after 32 photos the loss will be calculated for that batch
+    # the class_mode is categorical because we have a few categories. 
+    training_set = train_val_datagen.flow_from_directory('images/',
+                                                    subset='training',
+                                                    target_size = (64, 64),
+                                                    batch_size = 32,
+                                                    class_mode = 'sparse') 
+
+    validation_set = train_val_datagen.flow_from_directory('images/',
+                                                    subset='validation',
+                                                    target_size = (64, 64),
+                                                    batch_size = 32,
+                                                    class_mode = 'sparse')
+
+    test_set = test_datagen.flow_from_directory('images/',
+                                                target_size = (64, 64),
+                                                batch_size = 32,
+                                                class_mode = 'sparse')
+
+
+    # 3 Design a CNN network
+    # initialising the CNN
+    model = Sequential()
+
+    # 32-> number of filters, 3,3-> size of filter
+    # input shape 64x64 pixels, 3-> red, green, blue, activiation is relu
+    model.add(Conv2D(32, (3, 3), input_shape = (64, 64, 3), activation = 'relu'))
+
+    # Max pooling with a size of 2x2
+    model.add(MaxPooling2D(pool_size = (2, 2)))
+
+    # Add a drop out -> helps prevent of overfitting
+    model.add(Dropout(0.2))
+
+    # Repeat of Conv2D and MaxPooling2D
+    model.add(Conv2D(64, (3, 3), activation = 'relu'))
+    model.add(MaxPooling2D(pool_size = (2, 2)))
+    model.add(Dropout(0.2))
+
+    # Flatten -> into 1 dimensional array
+    model.add(Flatten())
+    # Dense -> hidden layer, fully connected
+    model.add(Dense(activation='relu', units=128))
+
+    # We have 5 different units: dancing, running, cycling, yoga or swimming and we are going to use softmax
+    model.add(Dense(activation="softmax", units=5))
+
+    # compiling the CNN with the optimizer of adam and the loss with categorical
+    model.compile(optimizer = 'adam', loss = 'sparse_categorical_crossentropy', metrics = ['accuracy'])
+
+    # Print out the summary of our model
+    print(model.summary())
+
+    # Train your model using the 'epochs' variable
+    history = model.fit(training_set,
+                        validation_data=validation_set,
+                        epochs=epochs)
