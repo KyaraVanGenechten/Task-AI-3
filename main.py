@@ -16,7 +16,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 from keras.callbacks import LambdaCallback
-
+import numpy as np 
 
 # Functions to scrape the images -> same as in notebook
 # Function to create a folder if it doesn't exist
