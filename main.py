@@ -203,7 +203,7 @@ if st.button('Train Model'):
     st.write(model.summary())
 
     # Train your model using the 'epochs' variable
-     history = model.fit(
+    history = model.fit(
         training_set,
         validation_data=validation_set,
         epochs=epochs_slider,
