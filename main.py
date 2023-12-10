@@ -133,14 +133,13 @@ if st.button('Perform Small EDA'):
 st.subheader("Train your model")
 epochs_slider = st.slider("Select the number of epochs", key="epochs_slider", min_value=1, max_value=50, value=20, step=1)
 if st.button('Train Model'):
-    # Define a slider for selecting the number of epochs
     # epochs = st.sidebar.slider("Select the number of epochs", min_value=1, max_value=50, value=20, step=1)
 
     # Display the selected epochs
     st.write(f"Training will run for {epochs_slider} epochs")
+    progress_bar = st.progress(0)  
 
     # 2 Designing a CNN network
-
     train_val_datagen = ImageDataGenerator(validation_split=0.2,
                                         rescale = 1./255,
                                         shear_range = 0.2,
@@ -204,9 +203,12 @@ if st.button('Train Model'):
     st.write(model.summary())
 
     # Train your model using the 'epochs' variable
-    history = model.fit(training_set,
-                            validation_data=validation_set,
-                            epochs=epochs_slider)
+     history = model.fit(
+        training_set,
+        validation_data=validation_set,
+        epochs=epochs_slider,
+        callbacks=[lambda epoch, logs: progress_bar.progress((epoch + 1) / epochs_slider)]  # Voortgangsbalk bijwerken
+    )
     st.write("Training completed!")  
 
     st.write("Training and Validation graphic")
