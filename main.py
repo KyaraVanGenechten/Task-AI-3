@@ -244,4 +244,4 @@ if st.button('Train Model'):
                     xticklabels=categories, yticklabels=categories)
     plt.xlabel('Predicted labels')
     plt.ylabel('Actual labels')
-    plt.show()
+    st.pyplot(plt)
