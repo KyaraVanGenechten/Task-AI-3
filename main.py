@@ -15,6 +15,7 @@ from keras.layers import Dropout
 from keras.preprocessing.image import ImageDataGenerator
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
+from keras.callbacks import LambdaCallback
 
 
 # Functions to scrape the images -> same as in notebook
@@ -202,13 +203,17 @@ if st.button('Train Model'):
     # Print out the summary of our model
     st.write(model.summary())
 
-    # Train your model using the 'epochs' variable
+    def update_progress(epoch, logs):
+        progress = (epoch + 1) / epochs_slider
+        progress_bar.progress(progress)  #
+
     history = model.fit(
         training_set,
         validation_data=validation_set,
         epochs=epochs_slider,
-        callbacks=[lambda epoch, logs: progress_bar.progress((epoch + 1) / epochs_slider)]  # Voortgangsbalk bijwerken
+        callbacks=[LambdaCallback(on_epoch_end=update_progress)]  
     )
+    
     st.write("Training completed!")  
 
     st.write("Training and Validation graphic")
