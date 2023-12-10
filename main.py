@@ -206,7 +206,7 @@ if st.button('Train Model'):
     # Train your model using the 'epochs' variable
     history = model.fit(training_set,
                             validation_data=validation_set,
-                            epochs=epochs)
+                            epochs=epochs_slider)
     st.write("Training completed!")  
 
     st.write("Training and Validation graphic")
