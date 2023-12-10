@@ -137,7 +137,7 @@ if st.button('Train Model'):
     # epochs = st.sidebar.slider("Select the number of epochs", min_value=1, max_value=50, value=20, step=1)
 
     # Display the selected epochs
-    st.write(f"Training will run for {epochs} epochs")
+    st.write(f"Training will run for {epochs_slider} epochs")
 
     # 2 Designing a CNN network
 
