@@ -134,7 +134,7 @@ st.subheader("Train your model")
 epochs_slider = st.slider("Select the number of epochs", key="epochs_slider", min_value=1, max_value=50, value=20, step=1)
 if st.button('Train Model'):
     # Define a slider for selecting the number of epochs
-    epochs = st.sidebar.slider("Select the number of epochs", min_value=1, max_value=50, value=20, step=1)
+    # epochs = st.sidebar.slider("Select the number of epochs", min_value=1, max_value=50, value=20, step=1)
 
     # Display the selected epochs
     st.write(f"Training will run for {epochs} epochs")
